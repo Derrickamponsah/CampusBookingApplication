@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — Manage Bookings — CampusBook</title>
+    <meta name="description" content="Admin panel for managing all bookings">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">📅</div>
+                    <span class="logo-text">CampusBook</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a th:href="@{/dashboard}" class="nav-link"><span class="nav-icon">🏠</span> Dashboard</a>
+                    <a th:href="@{/dashboard/facilities}" class="nav-link"><span class="nav-icon">🏢</span>
+                        Facilities</a>
+                    <a th:href="@{/dashboard/bookings}" class="nav-link"><span class="nav-icon">📋</span> My
+                        Bookings</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Admin</div>
+                    <a th:href="@{/dashboard/admin/bookings}" class="nav-link active"><span class="nav-icon">⚙️</span>
+                        Manage Bookings</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Account</div>
+                    <a th:href="@{/dashboard/profile}" class="nav-link"><span class="nav-icon">👤</span> Profile</a>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" th:text="${#strings.substring(user.name, 0, 1)}"></div>
+                    <div class="user-details">
+                        <div class="user-name" th:text="${user.name}"></div>
+                        <div class="user-role">
+                            <span class="badge badge-admin" style="font-size: 10px; padding: 3px 8px;">ADMIN</span>
+                        </div>
+                    </div>
+                </div>
+                <a th:href="@{/logout}" class="nav-link" style="margin-top: 8px; color: var(--danger);">
+                    <span class="nav-icon">🚪</span> Sign Out
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <button class="mobile-menu-btn"
+                        onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+                    <h1>⚙️ Admin — Manage All Bookings</h1>
+                    <p>View and update the status of all bookings in the system</p>
+                </div>
+            </div>
+
+            <div class="page-body">
+                <!-- Flash Messages -->
+                <div th:if="${success}" class="alert alert-success">
+                    <span>✅</span> <span th:text="${success}"></span>
+                </div>
+                <div th:if="${error}" class="alert alert-danger">
+                    <span>⚠️</span> <span th:text="${error}"></span>
+                </div>
+
+                <!-- All Bookings Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>📋 All Bookings (<span th:text="${#lists.size(bookings)}">0</span>)</h2>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(bookings)}" class="empty-state">
+                            <div class="empty-icon">📅</div>
+                            <h3>No bookings in the system</h3>
+                        </div>
+                        <div th:unless="${#lists.isEmpty(bookings)}" class="table-wrapper">
+                            <table class="data-table" id="adminBookingsTable">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>User</th>
+                                        <th>Facility</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Status</th>
+                                        <th>Update Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="booking : ${bookings}">
+                                        <td th:text="${booking.id}">#1</td>
+                                        <td>
+                                            <strong th:text="${booking.user.name}">John</strong>
+                                            <br>
+                                            <small style="color: var(--text-muted);"
+                                                th:text="${booking.user.email}">email</small>
+                                        </td>
+                                        <td th:text="${booking.facility.name}">Room A</td>
+                                        <td th:text="${booking.date}">2026-02-24</td>
+                                        <td th:text="${booking.startTime + ' - ' + booking.endTime}">09:00 - 10:00</td>
+                                        <td>
+                                            <span th:class="${'badge badge-' + #strings.toLowerCase(booking.status)}"
+                                                th:text="${booking.status}">CONFIRMED</span>
+                                        </td>
+                                        <td>
+                                            <form th:action="@{/dashboard/admin/bookings/{id}/status(id=${booking.id})}"
+                                                method="post" class="status-form">
+                                                <select name="status">
+                                                    <option value="CONFIRMED"
+                                                        th:selected="${booking.status == 'CONFIRMED'}">Confirmed
+                                                    </option>
+                                                    <option value="CANCELLED"
+                                                        th:selected="${booking.status == 'CANCELLED'}">Cancelled
+                                                    </option>
+                                                </select>
+                                                <button type="submit" class="btn btn-primary btn-sm"
+                                                    th:id="'updateStatusBtn-' + ${booking.id}">Update</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

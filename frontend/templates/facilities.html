@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facilities — CampusBook</title>
+    <meta name="description" content="Browse available campus facilities for booking">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">📅</div>
+                    <span class="logo-text">CampusBook</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a th:href="@{/dashboard}" class="nav-link" id="nav-dashboard">
+                        <span class="nav-icon">🏠</span> Dashboard
+                    </a>
+                    <a th:href="@{/dashboard/facilities}" class="nav-link active" id="nav-facilities">
+                        <span class="nav-icon">🏢</span> Facilities
+                    </a>
+                    <a th:href="@{/dashboard/bookings}" class="nav-link" id="nav-bookings">
+                        <span class="nav-icon">📋</span> My Bookings
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Account</div>
+                    <a th:href="@{/dashboard/profile}" class="nav-link" id="nav-profile">
+                        <span class="nav-icon">👤</span> Profile
+                    </a>
+                    <a th:if="${user.role == 'ADMIN'}" th:href="@{/dashboard/admin/bookings}" class="nav-link"
+                        id="nav-admin">
+                        <span class="nav-icon">⚙️</span> Admin Panel
+                    </a>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" th:text="${#strings.substring(user.name, 0, 1)}"></div>
+                    <div class="user-details">
+                        <div class="user-name" th:text="${user.name}"></div>
+                        <div class="user-role" th:text="${user.role}"></div>
+                    </div>
+                </div>
+                <a th:href="@{/logout}" class="nav-link" style="margin-top: 8px; color: var(--danger);">
+                    <span class="nav-icon">🚪</span> Sign Out
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <div class="page-header-actions">
+                    <div>
+                        <button class="mobile-menu-btn"
+                            onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+                        <h1>🏢 Facilities</h1>
+                        <p>Browse available campus facilities and check availability</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-body">
+                <div class="facility-grid">
+                    <div class="facility-card" th:each="facility : ${facilities}">
+                        <div class="facility-card-banner" th:style="${facility.capacity > 50 ? 'background: linear-gradient(135deg, #e17055, #fdcb6e)' :
+                                         facility.capacity > 20 ? 'background: linear-gradient(135deg, #6c5ce7, #a29bfe)' :
+                                         'background: linear-gradient(135deg, #00b894, #00cec9)'}">
+                            <span
+                                th:text="${facility.capacity > 50 ? '🎭' : facility.capacity > 20 ? '🏛️' : '📚'}">🏢</span>
+                        </div>
+                        <div class="facility-card-body">
+                            <h3 th:text="${facility.name}">Facility Name</h3>
+                            <div class="facility-meta">
+                                <span>📍 <span th:text="${facility.location}">Location</span></span>
+                                <span>👥 Capacity: <span th:text="${facility.capacity}">0</span> people</span>
+                            </div>
+                        </div>
+                        <div class="facility-card-footer">
+                            <a th:href="@{/dashboard/facilities/{id}/availability(id=${facility.id})}"
+                                class="btn btn-primary btn-sm btn-block" th:id="'viewAvailability-' + ${facility.id}">
+                                📅 View Availability →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${#lists.isEmpty(facilities)}" class="empty-state">
+                    <div class="empty-icon">🏗️</div>
+                    <h3>No facilities available</h3>
+                    <p>Facilities are being added. Please check back later.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

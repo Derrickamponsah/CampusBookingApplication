@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile — CampusBook</title>
+    <meta name="description" content="Your CampusBook profile">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">📅</div>
+                    <span class="logo-text">CampusBook</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a th:href="@{/dashboard}" class="nav-link"><span class="nav-icon">🏠</span> Dashboard</a>
+                    <a th:href="@{/dashboard/facilities}" class="nav-link"><span class="nav-icon">🏢</span>
+                        Facilities</a>
+                    <a th:href="@{/dashboard/bookings}" class="nav-link"><span class="nav-icon">📋</span> My
+                        Bookings</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Account</div>
+                    <a th:href="@{/dashboard/profile}" class="nav-link active"><span class="nav-icon">👤</span>
+                        Profile</a>
+                    <a th:if="${user.role == 'ADMIN'}" th:href="@{/dashboard/admin/bookings}" class="nav-link"><span
+                            class="nav-icon">⚙️</span> Admin Panel</a>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" th:text="${#strings.substring(user.name, 0, 1)}"></div>
+                    <div class="user-details">
+                        <div class="user-name" th:text="${user.name}"></div>
+                        <div class="user-role" th:text="${user.role}"></div>
+                    </div>
+                </div>
+                <a th:href="@{/logout}" class="nav-link" style="margin-top: 8px; color: var(--danger);">
+                    <span class="nav-icon">🚪</span> Sign Out
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <button class="mobile-menu-btn"
+                        onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+                    <h1>👤 My Profile</h1>
+                    <p>View your account information</p>
+                </div>
+            </div>
+
+            <div class="page-body">
+                <div class="card animate-fade-in-up">
+                    <div class="card-body">
+                        <div class="profile-header">
+                            <div class="profile-avatar" th:text="${#strings.substring(user.name, 0, 1)}">J</div>
+                            <div class="profile-info">
+                                <h2 th:text="${user.name}">User Name</h2>
+                                <p th:text="${user.email}">user@example.com</p>
+                                <span th:class="${user.role == 'ADMIN' ? 'badge badge-admin' : 'badge badge-user'}"
+                                    th:text="${user.role}">USER</span>
+                            </div>
+                        </div>
+
+                        <div class="profile-stats">
+                            <div class="stat-card purple">
+                                <div class="stat-icon purple">📊</div>
+                                <div class="stat-value" th:text="${totalBookings}">0</div>
+                                <div class="stat-label">Total Bookings</div>
+                            </div>
+                            <div class="stat-card green">
+                                <div class="stat-icon green">✅</div>
+                                <div class="stat-value" th:text="${activeBookings}">0</div>
+                                <div class="stat-label">Active Bookings</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Details -->
+                <div class="card animate-fade-in-up" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <h2>📝 Account Details</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="confirm-details">
+                            <div class="confirm-item">
+                                <span class="confirm-label">User ID</span>
+                                <span class="confirm-value" th:text="${'#' + user.id}">#1</span>
+                            </div>
+                            <div class="confirm-item">
+                                <span class="confirm-label">Full Name</span>
+                                <span class="confirm-value" th:text="${user.name}">User Name</span>
+                            </div>
+                            <div class="confirm-item">
+                                <span class="confirm-label">Email</span>
+                                <span class="confirm-value" th:text="${user.email}">user@example.com</span>
+                            </div>
+                            <div class="confirm-item">
+                                <span class="confirm-label">Role</span>
+                                <span class="confirm-value" th:text="${user.role}">USER</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card animate-fade-in-up" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <h2>⚡ Quick Actions</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="btn-group">
+                            <a th:href="@{/dashboard/facilities}" class="btn btn-primary btn-sm">📅 Book a Facility</a>
+                            <a th:href="@{/dashboard/bookings}" class="btn btn-outline btn-sm">📋 View My Bookings</a>
+                            <a th:href="@{/logout}" class="btn btn-danger btn-sm">🚪 Sign Out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

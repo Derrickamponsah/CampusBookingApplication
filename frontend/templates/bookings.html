@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings — CampusBook</title>
+    <meta name="description" content="View and manage your campus facility bookings">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">📅</div>
+                    <span class="logo-text">CampusBook</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a th:href="@{/dashboard}" class="nav-link"><span class="nav-icon">🏠</span> Dashboard</a>
+                    <a th:href="@{/dashboard/facilities}" class="nav-link"><span class="nav-icon">🏢</span>
+                        Facilities</a>
+                    <a th:href="@{/dashboard/bookings}" class="nav-link active"><span class="nav-icon">📋</span> My
+                        Bookings</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Account</div>
+                    <a th:href="@{/dashboard/profile}" class="nav-link"><span class="nav-icon">👤</span> Profile</a>
+                    <a th:if="${user.role == 'ADMIN'}" th:href="@{/dashboard/admin/bookings}" class="nav-link"><span
+                            class="nav-icon">⚙️</span> Admin Panel</a>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" th:text="${#strings.substring(user.name, 0, 1)}"></div>
+                    <div class="user-details">
+                        <div class="user-name" th:text="${user.name}"></div>
+                        <div class="user-role" th:text="${user.role}"></div>
+                    </div>
+                </div>
+                <a th:href="@{/logout}" class="nav-link" style="margin-top: 8px; color: var(--danger);">
+                    <span class="nav-icon">🚪</span> Sign Out
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <div class="page-header-actions">
+                    <div>
+                        <button class="mobile-menu-btn"
+                            onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+                        <h1>📋 My Bookings</h1>
+                        <p>View and manage all your facility bookings</p>
+                    </div>
+                    <a th:href="@{/dashboard/facilities}" class="btn btn-primary btn-sm">➕ New Booking</a>
+                </div>
+            </div>
+
+            <div class="page-body">
+                <!-- Flash Messages -->
+                <div th:if="${success}" class="alert alert-success">
+                    <span>✅</span> <span th:text="${success}"></span>
+                </div>
+                <div th:if="${error}" class="alert alert-danger">
+                    <span>⚠️</span> <span th:text="${error}"></span>
+                </div>
+
+                <!-- Status Filter Tabs -->
+                <div class="filter-tabs" style="margin-bottom: 24px;">
+                    <a th:href="@{/dashboard/bookings}" th:classappend="${selectedStatus == 'ALL' ? 'active' : ''}"
+                        class="filter-tab">All</a>
+                    <a th:href="@{/dashboard/bookings(status='CONFIRMED')}"
+                        th:classappend="${selectedStatus == 'CONFIRMED' ? 'active' : ''}" class="filter-tab">✅
+                        Confirmed</a>
+                    <a th:href="@{/dashboard/bookings(status='CANCELLED')}"
+                        th:classappend="${selectedStatus == 'CANCELLED' ? 'active' : ''}" class="filter-tab">❌
+                        Cancelled</a>
+                </div>
+
+                <!-- Bookings Table -->
+                <div class="card">
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(bookings)}" class="empty-state">
+                            <div class="empty-icon">📅</div>
+                            <h3>No bookings found</h3>
+                            <p th:if="${selectedStatus != 'ALL'}"
+                                th:text="'No ' + #strings.toLowerCase(selectedStatus) + ' bookings.'"></p>
+                            <p th:if="${selectedStatus == 'ALL'}">You haven't made any bookings yet.</p>
+                            <a th:href="@{/dashboard/facilities}" class="btn btn-primary btn-sm">Browse Facilities</a>
+                        </div>
+                        <div th:unless="${#lists.isEmpty(bookings)}" class="table-wrapper">
+                            <table class="data-table" id="bookingsTable">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Facility</th>
+                                        <th>Location</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="booking, iterStat : ${bookings}" class="animate-fade-in"
+                                        th:style="'animation-delay: ' + ${iterStat.index * 0.05} + 's'">
+                                        <td th:text="${booking.id}">#1</td>
+                                        <td>
+                                            <strong th:text="${booking.facility.name}">Room A</strong>
+                                        </td>
+                                        <td th:text="${booking.facility.location}">Building 1</td>
+                                        <td th:text="${booking.date}">2026-02-24</td>
+                                        <td th:text="${booking.startTime + ' - ' + booking.endTime}">09:00 - 10:00</td>
+                                        <td>
+                                            <span th:class="${'badge badge-' + #strings.toLowerCase(booking.status)}"
+                                                th:text="${booking.status}">CONFIRMED</span>
+                                        </td>
+                                        <td>
+                                            <form th:if="${booking.status != 'CANCELLED'}"
+                                                th:action="@{/dashboard/bookings/{id}/cancel(id=${booking.id})}"
+                                                method="post"
+                                                th:id="'cancelForm-' + ${booking.id}"
+                                                style="display: none;">
+                                            </form>
+                                            <button th:if="${booking.status != 'CANCELLED'}"
+                                                type="button"
+                                                class="btn btn-danger btn-sm"
+                                                th:data-booking-id="${booking.id}"
+                                                th:data-facility-name="${booking.facility.name}"
+                                                onclick="openCancelModal(this)">
+                                                Cancel
+                                            </button>
+                                            <span th:if="${booking.status == 'CANCELLED'}"
+                                                style="color: var(--text-muted); font-size: 13px;">—</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Custom Cancel Booking Modal -->
+    <div id="cancelModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Cancel Booking</h2>
+                <button type="button" class="modal-close" onclick="closeCancelModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to cancel this booking?</p>
+                <p><strong id="facilityNameDisplay"></strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeCancelModal()">No, Keep it</button>
+                <button type="button" class="btn btn-danger" onclick="submitCancelForm()">Yes, Cancel Booking</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentBookingId = '';
+
+        function openCancelModal(button) {
+            currentBookingId = button.getAttribute('data-booking-id');
+            const facilityName = button.getAttribute('data-facility-name');
+            document.getElementById('facilityNameDisplay').textContent = facilityName;
+            document.getElementById('cancelModal').style.display = 'flex';
+        }
+
+        function closeCancelModal() {
+            document.getElementById('cancelModal').style.display = 'none';
+            currentBookingId = '';
+        }
+
+        function submitCancelForm() {
+            if (currentBookingId) {
+                const form = document.getElementById('cancelForm-' + currentBookingId);
+                if (form) {
+                    form.submit();
+                } else {
+                    alert('Error: Could not find the booking form.');
+                }
+            }
+        }
+
+        // Close modal when clicking outside
+        const modal = document.getElementById('cancelModal');
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeCancelModal();
+                }
+            });
+        }
+
+        // Show success alert if redirected from cancel
+        if (window.location.search.includes('cancelled=true')) {
+            setTimeout(function() {
+                alert('✅ Booking successfully cancelled!');
+            }, 500);
+        }
+    </script>
+</body>
+
+</html>

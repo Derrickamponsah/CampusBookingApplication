@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — CampusBook</title>
+    <meta name="description" content="CampusBook Dashboard - View your bookings and available facilities">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">📅</div>
+                    <span class="logo-text">CampusBook</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a th:href="@{/dashboard}" class="nav-link active" id="nav-dashboard">
+                        <span class="nav-icon">🏠</span> Dashboard
+                    </a>
+                    <a th:href="@{/dashboard/facilities}" class="nav-link" id="nav-facilities">
+                        <span class="nav-icon">🏢</span> Facilities
+                    </a>
+                    <a th:href="@{/dashboard/bookings}" class="nav-link" id="nav-bookings">
+                        <span class="nav-icon">📋</span> My Bookings
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Account</div>
+                    <a th:href="@{/dashboard/profile}" class="nav-link" id="nav-profile">
+                        <span class="nav-icon">👤</span> Profile
+                    </a>
+                    <a th:if="${user.role == 'ADMIN'}" th:href="@{/dashboard/admin/bookings}" class="nav-link"
+                        id="nav-admin">
+                        <span class="nav-icon">⚙️</span> Admin Panel
+                    </a>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" th:text="${#strings.substring(user.name, 0, 1)}"></div>
+                    <div class="user-details">
+                        <div class="user-name" th:text="${user.name}"></div>
+                        <div class="user-role" th:text="${user.role}"></div>
+                    </div>
+                </div>
+                <a th:href="@{/logout}" class="nav-link" style="margin-top: 8px; color: var(--danger);" id="nav-logout">
+                    <span class="nav-icon">🚪</span> Sign Out
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <div class="page-header-actions">
+                    <div>
+                        <button class="mobile-menu-btn"
+                            onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+                        <h1>Welcome back, <span th:text="${user.name}">User</span> 👋</h1>
+                        <p>Here's a summary of your booking activity</p>
+                    </div>
+                    <a th:href="@{/dashboard/facilities}" class="btn btn-primary" id="newBookingBtn">
+                        ➕ New Booking
+                    </a>
+                </div>
+            </div>
+
+            <div class="page-body">
+                <!-- Flash Messages -->
+                <div th:if="${success}" class="alert alert-success">
+                    <span>✅</span> <span th:text="${success}"></span>
+                </div>
+                <div th:if="${error}" class="alert alert-danger">
+                    <span>⚠️</span> <span th:text="${error}"></span>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card purple">
+                        <div class="stat-icon purple">📊</div>
+                        <div class="stat-value" th:text="${totalBookings}">0</div>
+                        <div class="stat-label">Total Bookings</div>
+                    </div>
+                    <div class="stat-card green">
+                        <div class="stat-icon green">✅</div>
+                        <div class="stat-value" th:text="${confirmedCount}">0</div>
+                        <div class="stat-label">Confirmed</div>
+                    </div>
+                    <div class="stat-card red">
+                        <div class="stat-icon red">❌</div>
+                        <div class="stat-value" th:text="${cancelledCount}">0</div>
+                        <div class="stat-label">Cancelled</div>
+                    </div>
+                </div>
+
+                <!-- Recent Bookings -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>📋 Recent Bookings</h2>
+                        <a th:href="@{/dashboard/bookings}" class="btn btn-outline btn-sm">View All →</a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(recentBookings)}" class="empty-state">
+                            <div class="empty-icon">📅</div>
+                            <h3>No bookings yet</h3>
+                            <p>Start by browsing available facilities and booking a time slot.</p>
+                            <a th:href="@{/dashboard/facilities}" class="btn btn-primary btn-sm">Browse Facilities</a>
+                        </div>
+                        <div th:unless="${#lists.isEmpty(recentBookings)}" class="table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Facility</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="booking : ${recentBookings}">
+                                        <td th:text="${booking.facility.name}"></td>
+                                        <td th:text="${booking.date}"></td>
+                                        <td th:text="${booking.startTime + ' - ' + booking.endTime}"></td>
+                                        <td>
+                                            <span th:class="${'badge badge-' + #strings.toLowerCase(booking.status)}"
+                                                th:text="${booking.status}"></span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Available Facilities Quick View -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>🏢 Available Facilities</h2>
+                        <a th:href="@{/dashboard/facilities}" class="btn btn-outline btn-sm">View All →</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="facility-grid">
+                            <div class="facility-card" th:each="facility, iterStat : ${facilities}"
+                                th:if="${iterStat.index < 3}">
+                                <div class="facility-card-banner">
+                                    <span th:if="${facility.name.contains('Room')}">🏛️</span>
+                                    <span th:if="${facility.name.contains('Auditorium')}">🎭</span>
+                                    <span th:if="${facility.name.contains('Lab')}">💻</span>
+                                    <span th:if="${facility.name.contains('Study')}">📚</span>
+                                    <span th:if="${!facility.name.contains('Room') && !facility.name.contains('Auditorium') && !facility.name.contains('Lab') && !facility.name.contains('Study')}">🏢</span>
+                                </div>
+                                <div class="facility-card-body">
+                                    <h3 th:text="${facility.name}"></h3>
+                                    <div class="facility-meta">
+                                        <span>📍 <span th:text="${facility.location}"></span></span>
+                                        <span>👥 Capacity: <span th:text="${facility.capacity}"></span></span>
+                                    </div>
+                                </div>
+                                <div class="facility-card-footer">
+                                    <a th:href="@{/dashboard/facilities/{id}/availability(id=${facility.id})}"
+                                        class="btn btn-primary btn-sm btn-block">
+                                        Check Availability →
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

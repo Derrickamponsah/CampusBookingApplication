@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${facility.name + ' Availability — CampusBook'}">Availability — CampusBook</title>
+    <meta name="description" th:content="${'Check availability for ' + facility.name}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">📅</div>
+                    <span class="logo-text">CampusBook</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a th:href="@{/dashboard}" class="nav-link"><span class="nav-icon">🏠</span> Dashboard</a>
+                    <a th:href="@{/dashboard/facilities}" class="nav-link active"><span class="nav-icon">🏢</span>
+                        Facilities</a>
+                    <a th:href="@{/dashboard/bookings}" class="nav-link"><span class="nav-icon">📋</span> My
+                        Bookings</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Account</div>
+                    <a th:href="@{/dashboard/profile}" class="nav-link"><span class="nav-icon">👤</span> Profile</a>
+                    <a th:if="${user.role == 'ADMIN'}" th:href="@{/dashboard/admin/bookings}" class="nav-link"><span
+                            class="nav-icon">⚙️</span> Admin Panel</a>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" th:text="${#strings.substring(user.name, 0, 1)}"></div>
+                    <div class="user-details">
+                        <div class="user-name" th:text="${user.name}"></div>
+                        <div class="user-role" th:text="${user.role}"></div>
+                    </div>
+                </div>
+                <a th:href="@{/logout}" class="nav-link" style="margin-top: 8px; color: var(--danger);">
+                    <span class="nav-icon">🚪</span> Sign Out
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <div class="page-header-actions">
+                    <div>
+                        <button class="mobile-menu-btn"
+                            onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+                        <h1 th:text="${facility.name}">Facility Name</h1>
+                        <p>
+                            📍 <span th:text="${facility.location}"></span> · 👥 Capacity: <span
+                                th:text="${facility.capacity}"></span>
+                        </p>
+                    </div>
+                    <a th:href="@{/dashboard/facilities}" class="btn btn-outline btn-sm">← Back to Facilities</a>
+                </div>
+            </div>
+
+            <div class="page-body">
+                <!-- Flash Messages -->
+                <div th:if="${success}" class="alert alert-success">
+                    <span>✅</span> <span th:text="${success}"></span>
+                </div>
+                <div th:if="${error}" class="alert alert-danger">
+                    <span>⚠️</span> <span th:text="${error}"></span>
+                </div>
+
+                <!-- Date Selector -->
+                <div class="card" style="margin-bottom: 24px;">
+                    <div class="card-body">
+                        <form th:action="@{/dashboard/facilities/{id}/availability(id=${facility.id})}" method="get"
+                            style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                            <label style="font-weight: 600; font-size: 14px;">📅 Select Date:</label>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <input type="date" name="date" class="form-control" style="padding: 10px; border-radius: 6px; border: 1px solid #ddd; font-size: 14px;"
+                                    th:value="${selectedDate}" id="dateSelector">
+                                <small style="color: #666; font-size: 12px;">
+                                    📌 Book up to 90 days in advance
+                                </small>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm" id="checkAvailabilityBtn">Check
+                                Availability</button>
+                        </form>
+                    </div>
+                </div>
+
+                <script>
+                    // Initialize date picker constraints
+                    const dateSelector = document.getElementById('dateSelector');
+                    const today = new Date();
+                    
+                    // Set minimum date to today
+                    const minDate = new Date(today);
+                    minDate.setHours(0, 0, 0, 0);
+                    dateSelector.min = minDate.toISOString().split('T')[0];
+                    
+                    // Set maximum date to 90 days from today
+                    const maxDate = new Date(today);
+                    maxDate.setDate(maxDate.getDate() + 90);
+                    dateSelector.max = maxDate.toISOString().split('T')[0];
+                    
+                    // If no date is selected (page loaded without query param), set today as default
+                    if (!dateSelector.value) {
+                        dateSelector.value = minDate.toISOString().split('T')[0];
+                    }
+                </script>
+
+                <!-- Legend -->
+                <div style="display: flex; gap: 24px; margin-bottom: 20px; flex-wrap: wrap; font-size: 13px;">
+                    <span style="display: flex; align-items: center; gap: 6px;">
+                        <span
+                            style="width: 12px; height: 12px; border-radius: 4px; background: rgba(0, 206, 201, 0.3); border: 1px solid rgba(0, 206, 201, 0.5);"></span>
+                        Available
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 6px;">
+                        <span
+                            style="width: 12px; height: 12px; border-radius: 4px; background: rgba(255, 118, 117, 0.3); border: 1px solid rgba(255, 118, 117, 0.5);"></span>
+                        Booked
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 6px;">
+                        <span
+                            style="width: 12px; height: 12px; border-radius: 4px; background: rgba(106, 106, 128, 0.2); border: 1px solid rgba(106, 106, 128, 0.3);"></span>
+                        Past
+                    </span>
+                </div>
+
+                <!-- Time Slots Grid (30 min intervals) -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>⏰ Time Slots — <span th:text="${selectedDate}"></span></h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="slots-grid">
+                            <div th:each="slot : ${slots}"
+                                th:classappend="${slot.past ? 'past' : (slot.available ? 'available' : 'booked')}"
+                                class="slot">
+                                <a th:if="${slot.available and !slot.past}"
+                                   th:href="@{/dashboard/book(facilityId=${facility.id}, date=${selectedDate}, startTime=${slot.startTime}, endTime=${slot.endTime})}"
+                                   style="display: block; cursor: pointer; text-decoration: none; color: inherit;">
+                                    <div class="slot-time" th:text="${slot.startTime + ' - ' + slot.endTime}">08:00 - 08:30</div>
+                                    <div class="slot-status" th:text="${'✓ Available'}">Available</div>
+                                </a>
+                                <div th:unless="${slot.available and !slot.past}">
+                                    <div class="slot-time" th:text="${slot.startTime + ' - ' + slot.endTime}">08:00 - 08:30</div>
+                                    <div class="slot-status"
+                                        th:text="${slot.past ? 'Past' : '✗ Booked'}">Booked</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

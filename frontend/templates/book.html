@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Booking — CampusBook</title>
+    <meta name="description" content="Confirm your facility booking">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">📅</div>
+                    <span class="logo-text">CampusBook</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a th:href="@{/dashboard}" class="nav-link"><span class="nav-icon">🏠</span> Dashboard</a>
+                    <a th:href="@{/dashboard/facilities}" class="nav-link active"><span class="nav-icon">🏢</span>
+                        Facilities</a>
+                    <a th:href="@{/dashboard/bookings}" class="nav-link"><span class="nav-icon">📋</span> My
+                        Bookings</a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Account</div>
+                    <a th:href="@{/dashboard/profile}" class="nav-link"><span class="nav-icon">👤</span> Profile</a>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" th:text="${#strings.substring(user.name, 0, 1)}"></div>
+                    <div class="user-details">
+                        <div class="user-name" th:text="${user.name}"></div>
+                        <div class="user-role" th:text="${user.role}"></div>
+                    </div>
+                </div>
+                <a th:href="@{/logout}" class="nav-link" style="margin-top: 8px; color: var(--danger);">
+                    <span class="nav-icon">🚪</span> Sign Out
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <div class="page-header-actions">
+                    <div>
+                        <button class="mobile-menu-btn"
+                            onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+                        <h1>✅ Confirm Booking</h1>
+                        <p>Review the details below and confirm your booking</p>
+                    </div>
+                    <a th:href="@{/dashboard/facilities/{id}/availability(id=${facility.id}, date=${date})}"
+                        class="btn btn-outline btn-sm">← Back</a>
+                </div>
+            </div>
+
+            <div class="page-body">
+                <div class="booking-confirm animate-fade-in-up">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>📋 Booking Summary</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="confirm-details">
+                                <div class="confirm-item">
+                                    <span class="confirm-label">Facility</span>
+                                    <span class="confirm-value" th:text="${facility.name}">Room A</span>
+                                </div>
+                                <div class="confirm-item">
+                                    <span class="confirm-label">Location</span>
+                                    <span class="confirm-value" th:text="${facility.location}">Building 1</span>
+                                </div>
+                                <div class="confirm-item">
+                                    <span class="confirm-label">Date</span>
+                                    <span class="confirm-value" th:text="${date}">2026-02-24</span>
+                                </div>
+                                <div class="confirm-item">
+                                    <span class="confirm-label">Time</span>
+                                    <span class="confirm-value" th:text="${startTime + ' — ' + endTime}">09:00 —
+                                        09:30</span>
+                                </div>
+                                <div class="confirm-item">
+                                    <span class="confirm-label">Booked By</span>
+                                    <span class="confirm-value"
+                                        th:text="${user.name + ' (' + user.email + ')'}">User</span>
+                                </div>
+                                <div class="confirm-item">
+                                    <span class="confirm-label">Status</span>
+                                    <span class="badge badge-confirmed">CONFIRMED</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/dashboard/book}" method="post" style="margin-top: 20px;">
+                        <input type="hidden" name="facilityId" th:value="${facility.id}">
+                        <input type="hidden" name="date" th:value="${date}">
+                        <input type="hidden" name="startTime" th:value="${startTime}">
+                        <input type="hidden" name="endTime" th:value="${endTime}">
+                        <div class="btn-group" style="justify-content: center;">
+                            <button type="submit" class="btn btn-success" id="confirmBookingBtn">
+                                ✅ Confirm Booking
+                            </button>
+                            <a th:href="@{/dashboard/facilities/{id}/availability(id=${facility.id}, date=${date})}"
+                                class="btn btn-outline">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

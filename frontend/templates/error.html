@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - CampusBook</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .error-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .error-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 500px;
+            text-align: center;
+        }
+        .error-code {
+            font-size: 72px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .error-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .error-message {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .error-action {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .error-action a,
+        .error-action button {
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-card">
+            <div class="error-code" th:text="${status}">500</div>
+            <div class="error-title" th:text="${error}">Error</div>
+            <div class="error-message" th:text="${message}">An error occurred</div>
+            <div class="error-action">
+                <a href="/" class="btn-secondary">Go to Home</a>
+                <a href="/login" class="btn-primary">Go to Login</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
