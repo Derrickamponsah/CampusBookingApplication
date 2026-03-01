@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: booking-system
+    env: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: DB_PASSWORD
+        sync: false

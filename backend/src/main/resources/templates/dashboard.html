@@ -155,7 +155,8 @@
                                     <span th:if="${facility.name.contains('Auditorium')}">🎭</span>
                                     <span th:if="${facility.name.contains('Lab')}">💻</span>
                                     <span th:if="${facility.name.contains('Study')}">📚</span>
-                                    <span th:if="${!facility.name.contains('Room') && !facility.name.contains('Auditorium') && !facility.name.contains('Lab') && !facility.name.contains('Study')}">🏢</span>
+                                    <span
+                                        th:if="${!facility.name.contains('Room') && !facility.name.contains('Auditorium') && !facility.name.contains('Lab') && !facility.name.contains('Study')}">🏢</span>
                                 </div>
                                 <div class="facility-card-body">
                                     <h3 th:text="${facility.name}"></h3>
