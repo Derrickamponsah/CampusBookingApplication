@@ -1,42 +1,81 @@
-# Campus Booking Application - Deployment Guide
+# 📚 CampusBooking - Facility Reservation System
 
-This repository is ready for deployment on **Render** using Docker.
+> A modern web application for booking campus facilities with real-time availability, seamless user experience, and secure payment processing.
 
-## Project Structure Changes
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Visit_Now-blue?style=for-the-badge)](https://booking-system-vni8.onrender.com/)
 
-The project has been refactored for containerization:
-- **Frontend integrated**: All templates and static assets have been moved into `backend/src/main/resources` so they are bundled within the JAR.
-- **Dockerized**: A multi-stage `Dockerfile` is included in the root directory.
-- **Render Setup**: A `render.yaml` file is provided for easy deployment via Render Blueprints.
+## 🎯 Overview
 
-## Local Development
+**CampusBooking** is a comprehensive facility management and booking system designed for educational institutions. It enables students, faculty, and staff to easily reserve campus spaces including auditoriums, laboratories, conference rooms, and other facilities in real-time.
 
-To run the application locally:
+Whether you need a quiet study space, a conference room for group projects, or an auditorium for events, CampusBooking makes it simple and intuitive.
 
-1.  Navigate to the `backend` directory: `cd backend`
-2.  Ensure you have a `.env` file with your database password (this file is ignored by Git).
-3.  Run the application: `./mvnw spring-boot:run`
+---
 
-## Deployment on Render
+## ✨ Key Features
 
-### Step 1: Push Changes to GitHub
-Ensure all recent changes (Dockerfile, render.yaml, etc.) are pushed to your repository.
+### 📍 Facility Browsing & Search
+- Browse all available campus facilities with detailed descriptions
+- Search and filter facilities by type (Auditorium, Labs, Conference Rooms, etc.)
+- View facility images, capacity, amenities, and location
+- See real-time availability calendar
 
-### Step 2: Create a Render Blueprint
-1.  Log in to [Render](https://render.com).
-2.  Click **New +** and select **Blueprint**.
-3.  Connect your GitHub repository.
-4.  Render will automatically detect the `render.yaml` file.
-5.  In the configuration, add your `DB_PASSWORD` environment variable when prompted.
+### 🗓️ Smart Booking System
+- Intuitive date and time selection
+- Real-time availability checking
+- Instant booking confirmation
+- One-click rescheduling and cancellation
+- Booking history and management dashboard
 
-### Step 3: Database Configuration
-The application is configured to connect to your Aiven PostgreSQL database. Ensure the database is running and accessible.
+### 👤 User Authentication
+- Secure student/faculty registration and login
+- Email-based account verification
+- Password recovery and reset
+- User profile management
 
-## Environment Variables
-- `DB_PASSWORD`: The password for your Aiven database.
+### 📊 Admin Dashboard
+- Manage facilities and availability
+- View all bookings and user activity
+- Generate reports and analytics
+- Handle booking requests and approvals
+- Monitor facility usage patterns
 
-## Troubleshooting
-If you experience issues during deployment:
-- Check the **Events** and **Logs** tabs on Render.
-- Verify that the Docker build completes successfully.
-- Ensure the database SSL mode is set correctly in `application.properties` (currently set to `require`).
+---
+
+## 🏗️ Tech Stack
+
+### **Frontend**
+- **React.js** - Modern UI framework
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Responsive styling
+- **Axios** - API communication
+- **React Router** - Client-side routing
+
+### **Backend**
+- **Node.js** - Runtime environment
+- **Express.js** - Web framework
+- **MongoDB** - NoSQL database
+- **Mongoose** - ODM for MongoDB
+- **JWT** - Authentication tokens
+
+---
+
+## 🚀 Getting Started
+
+### Try the Live Application
+
+Visit the deployed application: **[https://booking-system-vni8.onrender.com/](https://booking-system-vni8.onrender.com/)**
+
+No installation required! Just open the link and start booking.
+
+#### Quick Demo Walk-through:
+
+1. **Sign Up/Login** - Create an account or use a test account
+2. **Browse Facilities** - Explore available campus facilities
+3. **Select Date & Time** - Choose your preferred booking slot
+4. **Review & Confirm** - Review booking details and proceed
+5. **Manage Bookings** - View, reschedule, or cancel from your dashboard
+
+
+
+---
